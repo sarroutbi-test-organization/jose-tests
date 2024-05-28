@@ -1,3 +1,0 @@
-PURPOSE of /CoreOS/jose/Regression/bz1466278-file-descriptor-leaks-in-fmt
-Description: runs jose fmt via valgrind, checking for leaks
-Author: Jiri Jaburek <jjaburek@redhat.com>

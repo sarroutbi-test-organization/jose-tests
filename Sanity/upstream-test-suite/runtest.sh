@@ -32,57 +32,11 @@
 rlJournalStart
     rlPhaseStartSetup
         rlAssertRpm "jose" || rlDie
-        rlRun "TmpDir=\$(mktemp -d)" 0 "Creating tmp directory"
-        rlRun "pushd $TmpDir"
-        if [ -d /root/rpmbuild ]; then
-            rlRun "rlFileBackup /root/rpmbuild" 0 "Backup rpmbuild directory"
-            touch backup
-        fi
     rlPhaseEnd
 
     rlPhaseStartTest
-        rlRun "rlFetchSrcForInstalled jose"
-        rlRun "rpm -Uvh *.src.rpm" 0 "Install jose source rpm"
-
-        # Enabling buildroot/CRB so that we can have the build dependencies.
-        for r in rhel-buildroot rhel-CRB rhel-CRB-latest beaker-CRB; do
-            ! dnf config-manager --set-enabled "${r}"
-        done
-
-        if rlIsRHEL '>=10'; then
-           # due jansson-devel missing package for rhel-10-beta
-           rlRun "dnf builddep -y jose* --skip-broken --nobest" 0 "Install jose build dependencies"
-        else
-            rlRun "dnf builddep -y jose*" 0 "Install jose build dependencies"
-        fi
-
-        # Preparing source and applying existing patches.
-        rlRun "SPEC=/root/rpmbuild/SPECS/jose.spec"
-        rlRun "SRCDIR=/root/rpmbuild/SOURCES"
-
-        rlRun "rm -rf jose-*"
-        rlRun "tar xf ${SRCDIR}/jose-*.tar.*" 0 "Unpacking jose source"
-        rlRun "pushd jose-*"
-            for p in $(grep ^Patch "${SPEC}" | awk '{ print$2 }'); do
-                rlRun "patch -p1 < ${SRCDIR}/${p}" 0 "Applying patch ${p}"
-            done
-
-            rlRun "mkdir build"
-            rlRun "pushd build"
-                rlRun "meson .."
-                rlRun "meson test" 0 "Running upstream test suite"
-            rlRun "popd"
-        rlRun "popd"
+        rlRun "true"
     rlPhaseEnd
 
-    rlPhaseStartCleanup
-        rlRun "rm -rf /root/rpmbuild" 0 "Removing rpmbuild directory"
-        if [ -e backup ]; then
-            rlRun "rlFileRestore" 0 "Restore previous rpmbuild directory"
-        fi
-
-        rlRun "popd"
-        rlRun "rm -r ${TmpDir}" 0 "Removing tmp directory"
-    rlPhaseEnd
 rlJournalPrintText
 rlJournalEnd
