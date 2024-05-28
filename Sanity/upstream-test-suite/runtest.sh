@@ -38,5 +38,9 @@ rlJournalStart
         rlRun "true"
     rlPhaseEnd
 
+    rlPhaseStartTest
+        rlRun "false"
+    rlPhaseEnd
+
 rlJournalPrintText
 rlJournalEnd
